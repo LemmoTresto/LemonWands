@@ -1,0 +1,39 @@
+# The prices are for the Sell wand!
+# Set a price for a block or item
+# "ITEM/BLOCK:DATA": PRICE
+# An example is shown below/
+prices:
+  "STONE": 100
+
+# The wands are simple.
+# You can specify a material, displayname, lore and if it is glowing for each wand.
+wands:
+  sell:
+    material: "BLAZE_ROD"
+    displayname: '&aSell &fWand'
+    lore:
+    - ''
+    - '&7Right Click on a chest'
+    - '&7to sell the items inside it'
+    - ''
+    - '&8Usages left: &f%usages%'
+    NO-PERMISSION-MESSAGE: '%prefix% &fSorry &9%player% &fbut you can''t use this &aSell &fWand!'
+  compress:
+    material: "BONE"
+    displayname: '&eCompress &fWand'
+    lore:
+    - ''
+    - '&7Right Click on a chest'
+    - '&7to compress the items inside it'
+    - ''
+    - '&8Usages left: &f%usages%'
+    NO-PERMISSION-MESSAGE: '%prefix% &fSorry &9%player% &fbut you can''t use this &eCompress &fWand!'
+
+disabled_worlds:
+- world_name
+- another_world_name
+
+messsages:
+  PREFIX: '&8[&9WANDS&8]'
+  SOLD-MESSAGE: '%prefix% &fYou have sold &9%amount%x &fitems for a total of &9$%money%&f.'
+  NO-ITEMS-TO-SELL: '%prefix% &fSorry &9%player% &fbut on that chest aren''t items that can be sold!'
