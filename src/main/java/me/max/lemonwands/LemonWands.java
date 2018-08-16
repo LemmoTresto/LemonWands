@@ -24,6 +24,8 @@
 
 package me.max.lemonwands;
 
+import co.aikar.commands.BukkitCommandManager;
+import me.max.lemonwands.commands.WandsCommand;
 import me.max.lemonwands.listeners.PlayerInteractListener;
 import me.max.lemonwands.wands.Wand;
 import me.max.lemonwands.wands.WandManager;
@@ -46,10 +48,13 @@ public final class LemonWands extends JavaPlugin {
     private WandManager wandManager;
     private PriceManager priceManager;
     private Economy econ;
+    private BukkitCommandManager manager;
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        getLogger().info("Unloading commands..");
+        manager.unregisterCommands();
+        getLogger().info("Unloaded commands!");
     }
 
     @Override
@@ -82,6 +87,11 @@ public final class LemonWands extends JavaPlugin {
                    .forEach(s -> prices.put(Material.matchMaterial(s), getConfig().getInt("prices." + s)));
         priceManager = new PriceManager(prices, econ);
         getLogger().info("Loaded data!");
+
+        getLogger().info("Loading commands..");
+        manager = new BukkitCommandManager(this);
+        manager.registerCommand(new WandsCommand(wandManager));
+        getLogger().info("Loaded commands!");
 
         getLogger().info("Loading listeners..");
         registerListeners(new PlayerInteractListener(wandManager, priceManager));
