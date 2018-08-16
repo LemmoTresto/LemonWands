@@ -24,8 +24,12 @@
 
 package me.max.lemonwands;
 
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Material;
+import org.bukkit.block.Chest;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -33,18 +37,27 @@ import java.util.Map;
 public class PriceManager {
 
     private Map<Material, Integer> prices;
+    private Economy economy;
 
-    public PriceManager(Map<Material, Integer> prices) {
+    public PriceManager(Map<Material, Integer> prices, Economy economy) {
         this.prices = prices;
+        this.economy = economy;
     }
 
-    public int getPrice(Material material) {
+    private int getPrice(Material material) {
         return prices.get(material);
     }
 
-    public int getTotalPrices(Inventory inventory) {
+    private int getTotalPrices(Inventory inventory) {
         return Arrays.stream(inventory.getContents())
                      .mapToInt(itemStack -> (getPrice(itemStack.getType()) * itemStack.getAmount())).sum();
+    }
+
+    public void handleChest(Player p, Chest chest) {
+        economy.depositPlayer(p, getTotalPrices(chest.getBlockInventory()));
+        chest.getBlockInventory().setContents(
+                (ItemStack[]) Arrays.stream(chest.getBlockInventory().getContents())
+                                    .filter(itemStack -> !prices.keySet().contains(itemStack.getType())).toArray());
     }
 
 }

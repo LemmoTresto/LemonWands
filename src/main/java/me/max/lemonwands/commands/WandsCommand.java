@@ -22,37 +22,8 @@
  *
  */
 
-package me.max.lemonwands.wands;
+package me.max.lemonwands.commands;
 
-import org.bukkit.inventory.ItemStack;
-
-public class Wand {
-
-    private Type type;
-    private ItemStack item;
-    private String noPermissionMessage;
-
-    public Wand(Type type, ItemStack item, String noPermissionMessage) {
-        this.type = type;
-        this.item = item;
-        this.noPermissionMessage = noPermissionMessage;
-    }
-
-    public ItemStack getItem() {
-        return item;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public String getNoPermissionMessage() {
-        return noPermissionMessage;
-    }
-
-    public enum Type {
-        SELL,
-        COMPRESS
-    }
+public class WandsCommand {
 
 }

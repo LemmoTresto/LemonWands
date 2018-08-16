@@ -27,6 +27,7 @@ package me.max.lemonwands;
 import me.max.lemonwands.listeners.PlayerInteractListener;
 import me.max.lemonwands.wands.Wand;
 import me.max.lemonwands.wands.WandManager;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -35,6 +36,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
@@ -43,6 +45,7 @@ public final class LemonWands extends JavaPlugin {
 
     private WandManager wandManager;
     private PriceManager priceManager;
+    private Economy econ;
 
     @Override
     public void onDisable() {
@@ -51,6 +54,12 @@ public final class LemonWands extends JavaPlugin {
 
     @Override
     public void onEnable() {
+
+        if (!setupEconomy()) {
+            getLogger().severe("Did not find Vault, plugin will not work without it. Disabling..");
+            Bukkit.getPluginManager().disablePlugin(this);
+            return;
+        }
 
         getLogger().info("Loading data..");
         saveDefaultConfig();
@@ -64,17 +73,18 @@ public final class LemonWands extends JavaPlugin {
                                 wandsSection.getString(s + ".material")),
                                 wandsSection.getString(s + ".displayname"),
                                 wandsSection.getStringList(s + ".lore"),
-                                wandsSection.getBoolean(s + ".glowing")))));
+                                wandsSection.getBoolean(s + ".glowing")),
+                        wandsSection.getString(s + ".NO-PERMISSION-MESSAGE"))));
         wandManager = new WandManager(wands);
 
         Map<Material, Integer> prices = new HashMap<>();
         getConfig().getConfigurationSection("prices").getKeys(false)
                    .forEach(s -> prices.put(Material.matchMaterial(s), getConfig().getInt("prices." + s)));
-        priceManager = new PriceManager(prices);
+        priceManager = new PriceManager(prices, econ);
         getLogger().info("Loaded data!");
 
         getLogger().info("Loading listeners..");
-        registerListeners(new PlayerInteractListener(wandManager));
+        registerListeners(new PlayerInteractListener(wandManager, priceManager));
         getLogger().info("Loaded listeners!");
     }
 
@@ -95,6 +105,30 @@ public final class LemonWands extends JavaPlugin {
         meta.addItemFlags(ItemFlag.values());
         itemStack.setItemMeta(meta);
         return itemStack;
+    }
+
+    private boolean setupEconomy() {
+        if (getServer().getPluginManager().getPlugin("Vault") == null) {
+            return false;
+        }
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp == null) {
+            return false;
+        }
+        econ = rsp.getProvider();
+        return econ != null;
+    }
+
+    public PriceManager getPriceManager() {
+        return priceManager;
+    }
+
+    public WandManager getWandManager() {
+        return wandManager;
+    }
+
+    public Economy getEcon() {
+        return econ;
     }
 
 }
