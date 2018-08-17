@@ -31,6 +31,7 @@ import me.max.lemonwands.wands.Wand;
 import me.max.lemonwands.wands.WandManager;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
@@ -42,6 +43,7 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public final class LemonWands extends JavaPlugin {
 
@@ -85,16 +87,16 @@ public final class LemonWands extends JavaPlugin {
         Map<Material, Integer> prices = new HashMap<>();
         getConfig().getConfigurationSection("prices").getKeys(false)
                    .forEach(s -> prices.put(Material.matchMaterial(s), getConfig().getInt("prices." + s)));
-        priceManager = new PriceManager(prices, econ);
+        priceManager = new PriceManager(prices, getEcon());
         getLogger().info("Loaded data!");
 
         getLogger().info("Loading commands..");
         manager = new BukkitCommandManager(this);
-        manager.registerCommand(new WandsCommand(wandManager));
+        manager.registerCommand(new WandsCommand(getWandManager()));
         getLogger().info("Loaded commands!");
 
         getLogger().info("Loading listeners..");
-        registerListeners(new PlayerInteractListener(wandManager, priceManager));
+        registerListeners(new PlayerInteractListener(getWandManager(), getPriceManager()));
         getLogger().info("Loaded listeners!");
     }
 
@@ -106,8 +108,9 @@ public final class LemonWands extends JavaPlugin {
         ItemStack itemStack = new ItemStack(type, 1);
 
         ItemMeta meta = itemStack.getItemMeta();
-        meta.setDisplayName(displayname);
-        meta.setLore(lore);
+        meta.setDisplayName(ChatColor.translateAlternateColorCodes('&', displayname));
+        meta.setLore(lore.stream().map(s -> ChatColor.translateAlternateColorCodes('&', s))
+                         .collect(Collectors.toList()));
         meta.setUnbreakable(true);
         if (glowing) {
             meta.addEnchant(Enchantment.KNOCKBACK, 1, false);

@@ -2,4 +2,4 @@ name: LemonWands
 version: ${project.version}
 main: me.max.lemonwands.LemonWands
 authors: [LemmoTresto]
-softdepend: [Vault]
+depend: [Vault]

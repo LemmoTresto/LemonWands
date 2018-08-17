@@ -82,6 +82,7 @@ public class PlayerInteractListener implements Listener {
         else if (wand.getType() == Wand.Type.COMPRESS) handleCompressWand(p, wand, event.getClickedBlock());
         item.setDurability((short) (item.getDurability() - 1));
         if (item.getDurability() == 0) p.getInventory().remove(item);
+        event.setCancelled(true);
     }
 
     private void handleSellWand(Player p, Wand wand, Block block) {

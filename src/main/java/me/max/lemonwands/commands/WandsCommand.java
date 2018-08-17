@@ -28,6 +28,7 @@ import co.aikar.commands.BaseCommand;
 import co.aikar.commands.annotation.*;
 import me.max.lemonwands.wands.Wand;
 import me.max.lemonwands.wands.WandManager;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -55,16 +56,22 @@ public class WandsCommand extends BaseCommand {
     }
 
     @Subcommand("give")
-    public void onWandsGive(CommandSender sender, Player p, String type, int durability) {
-        ItemStack stack = wandManager.getWand(Wand.Type.valueOf(type)).getItem();
-        stack.setDurability((short) durability);
+    @CommandCompletion("@players")
+    public void onWandsGive(CommandSender sender, String player, String type, String durability) {
+        Player p = Bukkit.getPlayer(player);
+        if (p == null) {
+            sender.sendMessage(ChatColor.RED + "Unknown player.");
+            return;
+        }
+        ItemStack stack = wandManager.getWand(Wand.Type.COMPRESS.matchType(type)).getItem();
+        stack.setDurability(Short.parseShort(durability));
 
         Map<Integer, ItemStack> stacks = p.getInventory().addItem(stack);
         if (stacks != null && !stacks.isEmpty()) {
             p.getWorld().dropItem(p.getLocation(), stacks.get(0));
         }
 
-        sender.sendMessage(ChatColor.YELLOW + "Given Wand to " + p.getName());
+        sender.sendMessage(ChatColor.YELLOW + "Given Wand to " + ChatColor.GRAY + p.getName());
         p.sendMessage(ChatColor.YELLOW + "You received a Wand!");
     }
 

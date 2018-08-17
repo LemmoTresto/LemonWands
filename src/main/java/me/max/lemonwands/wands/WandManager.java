@@ -45,7 +45,12 @@ public class WandManager {
     }
 
     public Wand getWand(ItemStack itemStack) {
-        return wands.stream().filter(wand -> wand.getItem().equals(itemStack)).findFirst().orElse(null);
+        return wands.stream()
+                    .filter(wand -> wand.getItem().getType() == itemStack.getType() && wand.getItem().getItemMeta()
+                                                                                           .getLore().equals(itemStack
+                                    .getItemMeta().getLore()) && wand.getItem().getItemMeta().getDisplayName()
+                                                                     .equals(itemStack.getItemMeta().getDisplayName()))
+                    .findFirst().orElse(null);
     }
 
 }

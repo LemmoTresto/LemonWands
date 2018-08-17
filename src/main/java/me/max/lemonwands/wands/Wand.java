@@ -39,7 +39,7 @@ public class Wand {
     }
 
     public ItemStack getItem() {
-        return item;
+        return item.clone();
     }
 
     public Type getType() {
@@ -50,9 +50,22 @@ public class Wand {
         return noPermissionMessage;
     }
 
+
     public enum Type {
         SELL,
-        COMPRESS
+        COMPRESS;
+
+        public Type matchType(String s) {
+            try {
+                Type type = Type.valueOf(s.toUpperCase());
+                return type;
+            } catch (Exception e) {
+                if (s.equalsIgnoreCase("SELL") || s.equalsIgnoreCase("SEL")) return Type.SELL;
+                if (s.equalsIgnoreCase("COMPRESS") || s.equalsIgnoreCase("COMPRES") || s.equalsIgnoreCase("COPRESS"))
+                    return Type.COMPRESS;
+            }
+            return null;
+        }
     }
 
 }
